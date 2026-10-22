@@ -88,9 +88,10 @@ export function spinnerSVG(config = {}) {
 
   return `<svg class="spinner-svg" viewBox="-112 -112 224 224" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
-    <radialGradient id="${id}-roots" cx="0.56" cy="0.06" r="0.62">
+    <radialGradient id="${id}-roots" cx="0.56" cy="0.04" r="0.66">
       <stop offset="0" stop-color="${c.roots}"/>
-      <stop offset="0.38" stop-color="${mix(c.roots, c.hair, 0.55)}"/>
+      <stop offset="0.2" stop-color="${c.roots}"/>
+      <stop offset="0.42" stop-color="${mix(c.roots, c.hair, 0.55)}"/>
       <stop offset="0.62" stop-color="${c.hair}"/>
       <stop offset="1" stop-color="${hairS}"/>
     </radialGradient>
@@ -159,12 +160,12 @@ export function spinnerSVG(config = {}) {
   </g>
 
   <g class="sp-arms">
-    <path d="M-24 -21 L-6.4 -79" stroke="url(#${id}-top)" stroke-width="12.5" stroke-linecap="round"/>
-    <path d="M24 -21 L6.4 -79" stroke="url(#${id}-top)" stroke-width="12.5" stroke-linecap="round"/>
-    <path d="M-26.5 -23 L-9 -78" stroke="${topD}" stroke-width="1" opacity=".3"/>
-    <path d="M26.5 -23 L9 -78" stroke="${topD}" stroke-width="1" opacity=".3"/>
-    <path d="M-7.9 -73 L-5 -84 M7.9 -73 L5 -84" stroke="${topS}" stroke-width="12.6" stroke-linecap="butt"/>
-    <path d="M-11 -76 L-2.4 -74 M-10.4 -78.6 L-1.8 -76.6 M-9.8 -81.2 L-1.2 -79.2 M11 -76 L2.4 -74 M10.4 -78.6 L1.8 -76.6 M9.8 -81.2 L1.2 -79.2" stroke="${topD}" stroke-width=".6" opacity=".45"/>
+    <path d="M-24 -21 Q-36 -52 -6.4 -83" fill="none" stroke="url(#${id}-top)" stroke-width="12" stroke-linecap="round"/>
+    <path d="M24 -21 Q36 -52 6.4 -83" fill="none" stroke="url(#${id}-top)" stroke-width="12" stroke-linecap="round"/>
+    <path d="M-29.5 -26 Q-41 -54 -10 -86" fill="none" stroke="${topD}" stroke-width="1" opacity=".3"/>
+    <path d="M29.5 -26 Q41 -54 10 -86" fill="none" stroke="${topD}" stroke-width="1" opacity=".3"/>
+    <path d="M-14.6 -75.6 L-5.6 -84.4 M14.6 -75.6 L5.6 -84.4" stroke="${topS}" stroke-width="12.2" stroke-linecap="butt"/>
+    <path d="M-16.4 -79.6 L-10.8 -73.6 M-13.4 -82.2 L-7.8 -76.2 M-10.4 -84.8 L-4.8 -78.8 M16.4 -79.6 L10.8 -73.6 M13.4 -82.2 L7.8 -76.2 M10.4 -84.8 L4.8 -78.8" stroke="${topD}" stroke-width=".6" opacity=".45"/>
     <g class="sp-hands">
       <path d="M-7.6 -83 C-8.8 -93 -4.2 -102 0 -108 C4.2 -102 8.8 -93 7.6 -83 C4 -85 -4 -85 -7.6 -83 Z" fill="${c.skin}"/>
       <path d="M0 -86 V-106" stroke="${skinS}" stroke-width="1.1" stroke-linecap="round"/>

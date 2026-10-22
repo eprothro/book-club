@@ -76,7 +76,7 @@ const browser = await chromium.launch({ args: ["--enable-gpu-rasterization", "--
   const pool = await closedRound();
   const dir = `${out}/raw`;
   fs.rmSync(dir, { recursive: true, force: true });
-  const p = await phone(browser, pool, "iphone-15", { scale: 2, recordVideo: { dir, size: { width: 390, height: 844 } } });
+  const p = await phone(browser, pool, "iphone-15", { scale: 2, recordVideo: { dir, size: { width: 780, height: 1688 } } });
   await open(p.page);
   await p.page.waitForFunction(() => document.getElementById("view-reveal").dataset.phase === "done", null, { timeout: 30000 });
   await p.page.waitForTimeout(1500);
@@ -88,7 +88,7 @@ const browser = await chromium.launch({ args: ["--enable-gpu-rasterization", "--
     execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", webm, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-movflags", "+faststart", `${out}/spin.mp4`]);
     execFileSync("ffmpeg", [
       "-y", "-loglevel", "error", "-i", webm,
-      "-vf", "fps=20,scale=360:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=160[p];[b][p]paletteuse=dither=sierra2_4a",
+      "-vf", "crop=780:1240:0:230,fps=18,scale=360:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle",
       `${out}/spin.gif`,
     ]);
     console.log(`wrote ${out}/spin.mp4 and ${out}/spin.gif`);
