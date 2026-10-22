@@ -175,6 +175,7 @@ function renderOpen(entered) {
 
 function setPane(pane) {
   document.body.dataset.pane = pane;
+  if (pane !== "search") document.body.classList.remove("is-typing");
   for (const name of ["search", "confirm", "mine"]) $(`pane-${name}`).hidden = name !== pane;
 }
 

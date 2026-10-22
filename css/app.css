@@ -874,13 +874,29 @@ body.is-typing .pane-title {
   opacity: 0.85;
 }
 
+/* Too small for type: just the cloth and a foil ornament. */
 .result .drawn {
-  font-size: 7px;
-  padding: 12% 8%;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
 }
 
+.result .drawn-title,
 .result .drawn-author {
   display: none;
+}
+
+.result .drawn::before,
+.result .drawn::after {
+  content: "";
+  width: 46%;
+  height: 1.5px;
+  background: var(--foil);
+  opacity: 0.8;
+}
+
+.result .drawn::after {
+  width: 26%;
 }
 
 .book {
