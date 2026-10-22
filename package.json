@@ -1,0 +1,18 @@
+{
+  "name": "bookclub",
+  "private": true,
+  "type": "module",
+  "description": "Tests and image tooling for bookclub.prothro.site. The site itself is static and has no build.",
+  "scripts": {
+    "serve": "python3 -m http.server 8766",
+    "test:db": "node tools/db.mjs",
+    "test:ui": "node tools/flows.mjs",
+    "test:keyboard": "node tools/keyboard.mjs",
+    "spin:record": "node tools/record-spin.mjs",
+    "images": "node tools/render-images.mjs"
+  },
+  "devDependencies": {
+    "pg": "^8.13.0",
+    "playwright": "^1.49.0"
+  }
+}
