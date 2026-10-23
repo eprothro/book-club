@@ -264,28 +264,37 @@ function resultRow(book, { typedOnly = false } = {}) {
   text.className = "result-text";
   const title = document.createElement("span");
   title.className = "result-title";
-  title.textContent = typedOnly ? `Use “${book.title}”` : book.title;
+  title.textContent = typedOnly ? `Use “${book.title}” with a plain cover` : book.title;
   text.append(title);
-  const meta = document.createElement("span");
-  meta.className = "result-meta";
-  meta.textContent = typedOnly ? "No cover, we'll make one" : [book.author, book.year].filter(Boolean).join(" · ");
-  if (meta.textContent) text.append(meta);
+  if (!typedOnly) {
+    const meta = document.createElement("span");
+    meta.className = "result-meta";
+    meta.textContent = [book.author, book.year].filter(Boolean).join(" · ");
+    if (meta.textContent) text.append(meta);
+  }
   btn.append(text);
   btn.addEventListener("click", () => choose(book));
   li.append(btn);
   return li;
 }
 
-function renderResults(books, query, { loading = false, failed = false } = {}) {
+function plainOption(query) {
+  return resultRow({ title: query, author: null, cover: null, key: null }, { typedOnly: true });
+}
+
+// The typed title is the first row whenever there is one: while covers load,
+// beside real matches, when nothing matches, and when lookup fails.
+function renderResults(books, query, { loading = false, failed = false, searched = false } = {}) {
   const list = $("results");
   list.textContent = "";
   document.body.classList.toggle("has-results", Boolean(query));
+  list.classList.toggle("is-loading", loading);
   if (!query) {
     setHint("");
     return;
   }
+  list.append(plainOption(query));
   if (loading) {
-    list.classList.add("is-loading");
     for (let i = 0; i < 3; i += 1) {
       const li = document.createElement("li");
       li.className = "skeleton";
@@ -295,11 +304,9 @@ function renderResults(books, query, { loading = false, failed = false } = {}) {
     setHint("");
     return;
   }
-  list.classList.remove("is-loading");
   for (const book of books) list.append(resultRow(book));
-  list.append(resultRow({ title: query, author: null, cover: null, key: null }, { typedOnly: true }));
   if (failed) setHint("Covers are napping. You can still use your title.");
-  else if (!books.length) setHint("No covers found.");
+  else if (searched && !books.length) setHint("No covers found.");
   else setHint("");
 }
 
@@ -311,7 +318,7 @@ function runSearch() {
   clearTimeout(searchTimer);
   searchCtl?.abort();
   if (query.length < 2) {
-    renderResults([], "");
+    renderResults([], query);
     return;
   }
   renderResults([], query, { loading: true });
@@ -321,10 +328,10 @@ function runSearch() {
     try {
       const books = await searchBooks(query, { signal: ctl.signal });
       if (ctl.signal.aborted || typed() !== query) return;
-      renderResults(books, query);
+      renderResults(books, query, { searched: true });
     } catch (error) {
       if (error?.name === "AbortError" || ctl.signal.aborted) return;
-      renderResults([], query, { failed: true });
+      renderResults([], query, { failed: true, searched: true });
     }
   }, 280);
 }

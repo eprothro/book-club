@@ -5,6 +5,7 @@
   "description": "Tests and image tooling for bookclub.prothro.site. The site itself is static and has no build.",
   "scripts": {
     "serve": "python3 -m http.server 8766",
+    "test:covers": "node tools/covers.mjs",
     "test:db": "node tools/db.mjs",
     "test:ui": "node tools/flows.mjs",
     "test:keyboard": "node tools/keyboard.mjs",
