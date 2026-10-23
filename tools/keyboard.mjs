@@ -160,10 +160,14 @@ for (const { engine, os, device } of cases) {
   assert.ok(above >= minRows, `${label}: ${above} matches above the keyboard`);
   await snap(page, os, viewport, keyboard, `${shots}/kb-${device}-results.png`);
 
-  // Scroll to the last option (use my title) and make sure it clears the keyboard.
+  // The plain-cover option is the first row, so it sits above the keyboard before any scroll.
+  const typed = await rect(page, ".result-typed");
+  assert.ok(typed.bottom <= bottom + 1 && typed.top >= 0, `${label}: plain cover option above the keyboard (${typed.top}-${typed.bottom} vs ${bottom})`);
+  assert.match(await page.locator(".result-typed .result-title").innerText(), /Use “the night circus” with a plain cover/);
+  // Scroll to the last match and make sure it clears the keyboard.
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await settle(page, 250);
-  const last = await rect(page, ".result-typed");
+  const last = await rect(page, ".results li:last-child .result");
   assert.ok(last.bottom <= bottom + 1 && last.top >= 0, `${label}: last option reachable (${last.top}-${last.bottom} vs ${bottom})`);
   const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   assert.ok(wide <= 1, `${label}: sideways scroll ${wide}`);

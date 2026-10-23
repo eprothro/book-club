@@ -124,7 +124,9 @@ export async function phone(browser, pool, name = "iphone-15", opts = {}) {
   await context.route("https://cdn.jsdelivr.net/**", (route) => cached(route));
   await context.route("https://openlibrary.org/search.json**", async (route) => {
     if (opts.searchDown) return route.abort();
-    const q = new URL(route.request().url()).searchParams.get("q") || "";
+    if (opts.searchDelay) await new Promise((resolve) => setTimeout(resolve, opts.searchDelay));
+    const params = new URL(route.request().url()).searchParams;
+    const q = params.get("q") || params.get("title") || "";
     if (opts.fixtures?.[q.toLowerCase()]) {
       return route.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify(opts.fixtures[q.toLowerCase()]) });
     }

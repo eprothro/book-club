@@ -43,7 +43,7 @@ The phone token is 64 hex characters from the server; only its SHA-256 is stored
 | --- | --- |
 | `index.html`, `css/app.css` | All four views: idle, open, reveal, empty. |
 | `js/app.js` | State, polling, countdown, search UI, submit, reveal sequence. |
-| `js/covers.js` | Lookup: Open Library and Google Books in parallel, no keys. Either can fail; results with covers first, deduped by title and author. **Use "…"** always offers the typed title. |
+| `js/covers.js` | Lookup: Open Library by title, ranked against what you typed, Google Books only if that isn't already a confident covered hit. Accents, punctuation, a leading "The", and small typos are folded together; unrelated titles are dropped. **Use “…” with a plain cover** is the first row while searching, beside matches, and when lookup fails. |
 | `js/wheel.js` | The circle (SVG) and the spin. Only the spinner moves, one `transform` per frame on one element: a wind-up, a long ease-out, and a little rocking settle. |
 | `js/spinner.js` | The spinner illustration, self-contained, from one config. |
 | `js/drawn.js` | Typeset cloth covers for books with no cover art. |

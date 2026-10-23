@@ -755,7 +755,12 @@ body.is-typing .pane-title {
   color: var(--ink-3);
 }
 
+.result-typed {
+  background: rgba(125, 46, 58, 0.06);
+}
+
 .result-typed .result-title {
+  -webkit-line-clamp: 3;
   font-family: var(--sans);
   font-size: 16px;
   font-weight: 500;

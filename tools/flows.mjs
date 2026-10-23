@@ -52,6 +52,10 @@ async function search(page, text) {
 async function pickFirst(page, text) {
   await search(page, text);
   const first = page.locator(".result:not(.result-typed)").first();
+  if ((await first.count()) === 0) {
+    const hint = await page.locator("#hint").innerText();
+    throw new Error(`no catalog match for "${text}" (${hint || "no hint"})`);
+  }
   const title = (await first.locator(".result-title").innerText()).trim();
   await first.click();
   await page.waitForFunction(() => document.body.dataset.pane === "confirm");
@@ -128,6 +132,9 @@ for (const engine of engines) {
   assert.ok(rows >= 2 && rows <= 5, `a few matches (${rows})`);
   const covers = await jenn.page.locator(".result:not(.result-typed) .cover img").count();
   assert.ok(covers >= 2, "matches show real covers");
+  assert.equal(await jenn.page.locator(".results li").first().locator(".result-typed").count(), 1, "typed title stays above the matches");
+  assert.equal(await jenn.page.locator(".result-typed .result-title").innerText(), "Use “the secret history” with a plain cover");
+  assert.equal(await jenn.page.locator(".result-typed .drawn").count(), 1);
   await jenn.page.waitForFunction(() => [...document.querySelectorAll(".result .cover img")].every((i) => i.complete));
   await noOverflow(jenn.page, "results");
   await shot(jenn.page, tag("03-search-results-iphone15"));
@@ -177,11 +184,23 @@ for (const engine of engines) {
   assert.ok(after <= before && before - after < 30, `countdown continues (${before} -> ${after})`);
   console.log("ok reopen mid-window: pick and countdown restored");
 
+  // --- Typed title, even when covers came back ------------------------------------------
+  await search(jana.page, "Where the Crawdads Sing");
+  assert.ok((await jana.page.locator(".result:not(.result-typed)").count()) >= 1, "real matches");
+  assert.equal(await jana.page.locator(".result-typed .result-title").innerText(), "Use “Where the Crawdads Sing” with a plain cover");
+  await jana.page.locator(".result-typed").click();
+  await waitFor(jana.page, () => document.body.dataset.pane === "confirm");
+  assert.equal(await jana.page.locator("#confirm-book .book-title").innerText(), "Where the Crawdads Sing");
+  assert.equal(await jana.page.locator("#confirm-book .drawn").count(), 1, "plain cover, not a lookalike");
+  await jana.page.locator("#back").click();
+  await waitFor(jana.page, () => document.body.dataset.pane === "search");
+  console.log("ok typed title: offered above real matches, confirms the exact words");
+
   // --- Cover search with no results ----------------------------------------------------
   await search(jana.page, "zzqx vworp blint");
   assert.equal(await jana.page.locator(".result:not(.result-typed)").count(), 0);
   assert.equal(await jana.page.locator("#hint").innerText(), "No covers found.");
-  assert.equal(await jana.page.locator(".result-typed .result-title").innerText(), "Use “zzqx vworp blint”");
+  assert.equal(await jana.page.locator(".result-typed .result-title").innerText(), "Use “zzqx vworp blint” with a plain cover");
   await shot(jana.page, tag("06-no-results-pixel"));
   // Jana's book club book is real, just not in the catalog yet: she uses her title.
   await search(jana.page, "zzqx vworp blint");
@@ -205,9 +224,29 @@ for (const engine of engines) {
   await open(julie.page);
   await search(julie.page, "lessons in chemistry");
   assert.match(await julie.page.locator("#hint").innerText(), /napping/);
+  assert.equal(await julie.page.locator(".result-typed .result-title").innerText(), "Use “lessons in chemistry” with a plain cover");
+  assert.equal(await julie.page.locator(".result:not(.result-typed)").count(), 0);
   await shot(julie.page, tag("08-search-down-iphonese"));
   await julie.context.close();
   console.log("ok search down: still lets you use your title");
+
+  // The plain-cover row is tappable while the catalog is still answering.
+  const slow = await phone(browser, pool, "iphone-15", { searchDelay: 1200 });
+  await open(slow.page);
+  await slow.page.locator("#q").fill("Pachinko");
+  await waitFor(slow.page, () => {
+    const list = document.getElementById("results");
+    const typed = list.querySelector(".result-typed .result-title");
+    return list.classList.contains("is-loading") && typed && typed.textContent.includes("Pachinko");
+  });
+  assert.match(await slow.page.locator(".result-typed .result-title").innerText(), /with a plain cover/);
+  await slow.page.locator(".result-typed").click();
+  await waitFor(slow.page, () => document.body.dataset.pane === "confirm");
+  assert.equal(await slow.page.locator("#confirm-book .book-title").innerText(), "Pachinko");
+  assert.equal(await slow.page.locator("#confirm-book .drawn").count(), 1);
+  await slow.page.locator("#back").click();
+  await slow.context.close();
+  console.log("ok while searching: typed title is already there");
 
   // --- Early close at 6 -------------------------------------------------------------
   const others = [];

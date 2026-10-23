@@ -1,5 +1,5 @@
 // Bump CACHE on every deploy that changes a file below.
-const CACHE = "bookclub-v1";
+const CACHE = "bookclub-v2";
 const ASSETS = [
   "/",
   "/index.html",
