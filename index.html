@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <title>Book Club</title>
+  <meta name="description" content="Pick our next book.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#f6efe0">
+  <meta name="color-scheme" content="light">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="canonical" href="https://bookclub.prothro.site/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Book Club">
+  <meta property="og:description" content="Pick our next book.">
+  <meta property="og:url" content="https://bookclub.prothro.site/">
+  <meta property="og:image" content="https://bookclub.prothro.site/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A cartoon book club member spinning on an office chair in a circle of book covers.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Book Club">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://yhiynwocgqskcmldrmyd.supabase.co" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://openlibrary.org" crossorigin>
+  <link rel="preload" href="/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body data-view="loading">
+  <header class="top">
+    <p class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.8 4.4 9.6 4.6 12 6.4c2.4-1.8 5.2-2 8-.9v13c-2.8-1.1-5.6-.9-8 .9-2.4-1.8-5.2-2-8-.9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6.4v13" stroke="currentColor" stroke-width="1.6"/></svg><span>Book <em>Club</em></span></p>
+  </header>
+
+  <main class="stage">
+    <p class="loading" aria-hidden="true"><span></span><span></span><span></span></p>
+
+    <section class="view view-idle" id="view-idle" aria-labelledby="idle-title" hidden>
+      <div class="wheel-host" id="idle-wheel"></div>
+      <h1 class="headline" id="idle-title">What are we reading next?</h1>
+      <button type="button" class="btn btn-primary" id="start">Start</button>
+      <p class="fine">Opens picks for an hour</p>
+    </section>
+
+    <section class="view view-open" id="view-open" aria-label="Picks are open" hidden>
+      <div class="status" id="status">
+        <div class="clock">
+          <p class="clock-time" id="clock-time">60:00</p>
+          <p class="clock-label" id="clock-label">left</p>
+        </div>
+        <div class="tally">
+          <div class="shelf" id="shelf" aria-hidden="true"></div>
+          <p class="tally-label" id="tally-label" aria-live="polite"><b id="count">0</b> of <span id="cap">6</span> in</p>
+        </div>
+      </div>
+
+      <div class="pane pane-search" id="pane-search">
+        <h2 class="pane-title" id="search-title">Your pick</h2>
+        <form class="search" id="search" role="search" autocomplete="off">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15 15 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="q" type="search" inputmode="search" enterkeyhint="search" placeholder="Title or author" aria-labelledby="search-title" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="120">
+          <button type="button" class="clear" id="clear" aria-label="Clear" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        </form>
+        <ul class="results" id="results" aria-label="Matches"></ul>
+        <p class="hint" id="hint" aria-live="polite"></p>
+        <button type="button" class="text-btn" id="keep" hidden>Keep my pick</button>
+      </div>
+
+      <div class="pane pane-confirm" id="pane-confirm" hidden>
+        <div class="book book-big" id="confirm-book"></div>
+        <button type="button" class="btn btn-primary" id="confirm">Pick this one</button>
+        <button type="button" class="text-btn" id="back">Back</button>
+        <p class="error" id="confirm-error" role="alert" hidden></p>
+      </div>
+
+      <div class="pane pane-mine" id="pane-mine" hidden>
+        <p class="kicker">Your pick</p>
+        <div class="book book-big" id="mine-book"></div>
+        <p class="secret"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Secret till the spin</p>
+        <button type="button" class="text-btn" id="change">Change</button>
+      </div>
+    </section>
+
+    <section class="view view-reveal" id="view-reveal" aria-label="This round's pick" data-phase="spin" hidden>
+      <div class="wheel-host" id="reveal-wheel"></div>
+      <p class="caption" id="caption" aria-live="polite"></p>
+      <div class="winner" id="winner" aria-live="polite">
+        <div class="winner-cover" id="winner-cover"></div>
+        <div class="winner-text">
+          <p class="kicker">Next up</p>
+          <h1 class="winner-title" id="winner-title"></h1>
+          <p class="winner-author" id="winner-author"></p>
+        </div>
+      </div>
+      <div class="after" id="after">
+        <button type="button" class="text-btn" id="replay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 1 0 2.1-5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6.5 3.5v4h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Replay</button>
+        <button type="button" class="text-btn" id="again">New round</button>
+      </div>
+    </section>
+
+    <section class="view view-empty" id="view-empty" aria-labelledby="empty-title" hidden>
+      <div class="wheel-host" id="empty-wheel"></div>
+      <h1 class="headline" id="empty-title">No picks came in.</h1>
+      <button type="button" class="btn btn-primary" id="restart">Start again</button>
+    </section>
+  </main>
+
+  <p class="toast" id="toast" role="status" aria-live="polite"></p>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
